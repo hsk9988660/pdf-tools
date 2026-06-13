@@ -1,0 +1,122 @@
+'use client';
+import React from 'react';
+import Link from 'next/link';
+import { FileText, Heart } from 'lucide-react';
+
+const toolLinks = [
+  { href: '/merge', label: 'Merge PDF' },
+  { href: '/split', label: 'Split PDF' },
+  { href: '/compress', label: 'Compress PDF' },
+  { href: '/rotate', label: 'Rotate PDF' },
+  { href: '/watermark', label: 'Add Watermark' },
+  { href: '/page-numbers', label: 'Page Numbers' },
+  { href: '/jpg-to-pdf', label: 'JPG to PDF' },
+  { href: '/pdf-to-jpg', label: 'PDF to JPG' },
+];
+
+export default function Footer() {
+  return (
+    <footer className="bg-slate-900 dark:bg-slate-950 border-t border-slate-800">
+      {/* Main footer content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          {/* Brand column */}
+          <div className="lg:col-span-1">
+            <Link href="/" className="flex items-center gap-2.5 group mb-4">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-indigo-500 flex items-center justify-center shadow-md shadow-primary/20 group-hover:shadow-lg group-hover:shadow-primary/30 transition-all duration-300">
+                <FileText className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-xl font-bold tracking-tight text-white">
+                PDF<span className="text-primary">Tools</span>
+              </span>
+            </Link>
+            <p className="text-sm text-slate-400 leading-relaxed max-w-xs">
+              Free online PDF tools to merge, split, compress, rotate, and convert your documents. 
+              No sign-up required, no file size limits, and your files are automatically deleted after processing.
+            </p>
+          </div>
+
+          {/* Tools column */}
+          <div>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+              PDF Tools
+            </h3>
+            <ul className="space-y-2.5">
+              {toolLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-slate-400 hover:text-white transition-colors duration-200"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Resources column */}
+          <div>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+              Resources
+            </h3>
+            <ul className="space-y-2.5">
+              <li>
+                <Link href="/" className="text-sm text-slate-400 hover:text-white transition-colors duration-200">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <span className="text-sm text-slate-500 cursor-not-allowed">
+                  Privacy Policy
+                </span>
+              </li>
+              <li>
+                <span className="text-sm text-slate-500 cursor-not-allowed">
+                  Terms of Service
+                </span>
+              </li>
+              <li>
+                <span className="text-sm text-slate-500 cursor-not-allowed">
+                  FAQ
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          {/* About column */}
+          <div>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+              About
+            </h3>
+            <ul className="space-y-2.5">
+              <li>
+                <p className="text-sm text-slate-400">
+                  Built with Next.js, Tailwind CSS, and pdf-lib. 
+                  All processing is done server-side for optimal performance.
+                </p>
+              </li>
+              <li className="pt-2">
+                <p className="text-sm text-slate-500">
+                  &copy; {new Date().getFullYear()} PDF Tools. All rights reserved.
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="text-xs text-slate-500">
+            Free online PDF utilities — no sign-up, no limits, no tracking.
+          </p>
+          <p className="text-xs text-slate-600 flex items-center gap-1">
+            Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> for everyone
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
