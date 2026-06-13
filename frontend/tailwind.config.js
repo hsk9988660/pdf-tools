@@ -141,6 +141,14 @@ module.exports = {
         'progress-fill': {
           '0%': { width: '0%' },
         },
+        'spin-reverse': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(-360deg)' },
+        },
+        'ping-soft': {
+          '0%': { transform: 'scale(1)', opacity: '1' },
+          '75%, 100%': { transform: 'scale(1.05)', opacity: '0.5' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.4s ease-out',
@@ -157,6 +165,8 @@ module.exports = {
         'bounce-gentle': 'bounce-gentle 2s ease-in-out infinite',
         'wiggle': 'wiggle 0.5s ease-in-out',
         'progress-fill': 'progress-fill 1s ease-out',
+        'spin-reverse': 'spin-reverse 8s linear infinite',
+        'ping-soft': 'ping-soft 2s ease-in-out infinite',
       },
 
       backgroundSize: {

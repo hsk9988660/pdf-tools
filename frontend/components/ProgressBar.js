@@ -20,11 +20,14 @@ export default function ProgressBar({ progress = 0, status = 'Processing...', sh
         </div>
 
         {/* Progress bar */}
-        <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+        <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-primary via-blue-500 to-indigo-500 transition-all duration-500 ease-out shadow-sm shadow-primary/20"
+            className="h-full rounded-full bg-gradient-to-r from-primary via-blue-500 to-indigo-500 transition-all duration-500 ease-out shadow-sm shadow-primary/20 relative overflow-hidden"
             style={{ width: `${clampedProgress}%` }}
-          />
+          >
+            {/* Shimmer effect on progress bar */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer bg-[length:200%_100%]" />
+          </div>
         </div>
       </div>
     </div>

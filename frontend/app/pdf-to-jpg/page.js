@@ -6,6 +6,7 @@ import FileDropzone from '../../components/FileDropzone';
 import ProgressBar from '../../components/ProgressBar';
 import { uploadFile } from '../../lib/api';
 import { FileImage, Download, RotateCcw } from 'lucide-react';
+import DownloadButton from '../../components/DownloadButton';
 
 export default function PdfToJpgPage() {
   const [files, setFiles] = useState([]);
