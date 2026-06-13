@@ -38,8 +38,11 @@ export default function ToolCard({ id, title, desc, icon }) {
         {/* Hover gradient overlay */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-primary/[0.03] to-transparent pointer-events-none" />
 
-        {/* Top accent bar */}
-        <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+        {/* Top accent bar - always visible but subtle, brightens on hover */}
+        <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${gradient} opacity-30 group-hover:opacity-100 transition-opacity duration-300`} />
+
+        {/* Subtle corner gradient glow */}
+        <div className={`absolute -top-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-[0.04] blur-3xl transition-opacity duration-500 pointer-events-none`} />
 
         <CardContent className="flex flex-col items-center p-6 sm:p-7 text-center relative z-10">
           {/* Icon with gradient */}

@@ -64,6 +64,16 @@ export default function FileDropzone({ onFilesSelected, accept = '.pdf', multipl
           }}
         />
 
+        {/* Gradient border ring on drag */}
+        {isDragging && (
+          <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{
+            background: 'linear-gradient(135deg, hsl(var(--primary) / 0.3), transparent 40%, transparent 60%, hsl(var(--primary) / 0.3))',
+            mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            maskComposite: 'exclude',
+            padding: '2px',
+          }} />
+        )}
+
         <input
           ref={inputRef}
           type="file"
