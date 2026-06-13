@@ -2,10 +2,12 @@
   "name": "pdf-tools-backend",
   "version": "1.0.0",
   "description": "PDF Tools API server",
-  "main": "server.js",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "bullmq": "^5.7.0",
@@ -21,6 +23,14 @@
     "sharp": "^0.33.2"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.11",
+    "@types/node": "^20.11.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/sequelize": "^4.28.20",
+    "nodemon": "^3.0.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3"
   }
 }

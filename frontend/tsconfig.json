@@ -6,9 +6,9 @@
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": true,
+    "allowJs": false,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "noEmit": true,
     "incremental": true,
     "module": "esnext",
@@ -23,12 +23,10 @@
     ],
     "esModuleInterop": true,
     "ignoreDeprecations": "6.0",
-
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     }
-
   },
   "include": [
     "next-env.d.ts",
@@ -40,4 +38,3 @@
     "node_modules"
   ]
 }
-
