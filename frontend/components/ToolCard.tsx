@@ -1,9 +1,22 @@
 import React from 'react';
 import Link from 'next/link';
-import { Card, CardContent } from './ui/card';
 import {
-  Combine, Scissors, Shrink, RotateCw, Droplets,
-  Hash, ImagePlus, FileImage, ArrowRight,
+  ArrowRight,
+  Combine,
+  FileImage,
+  FileKey2,
+  FileLock2,
+  FilePenLine,
+  FileScan,
+  FileText,
+  Hash,
+  ImagePlus,
+  Layers3,
+  RotateCw,
+  Scissors,
+  Shrink,
+  Sparkles,
+  Stamp,
 } from 'lucide-react';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -11,21 +24,33 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   split: Scissors,
   compress: Shrink,
   rotate: RotateCw,
-  watermark: Droplets,
+  watermark: Stamp,
   'page-numbers': Hash,
   'jpg-to-pdf': ImagePlus,
   'pdf-to-jpg': FileImage,
+  unlock: FileKey2,
+  protect: FileLock2,
+  sign: FilePenLine,
+  ocr: FileScan,
+  organize: Layers3,
+  word: FileText,
 };
 
-const gradientMap: Record<string, string> = {
-  merge: 'from-blue-500 to-indigo-500',
-  split: 'from-emerald-500 to-teal-500',
-  compress: 'from-orange-500 to-amber-500',
-  rotate: 'from-purple-500 to-pink-500',
-  watermark: 'from-cyan-500 to-blue-500',
-  'page-numbers': 'from-rose-500 to-red-500',
-  'jpg-to-pdf': 'from-violet-500 to-purple-500',
-  'pdf-to-jpg': 'from-sky-500 to-blue-500',
+const toneMap: Record<string, string> = {
+  merge: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+  split: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+  compress: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+  rotate: 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
+  watermark: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-300',
+  'page-numbers': 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
+  'jpg-to-pdf': 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-950 dark:text-fuchsia-300',
+  'pdf-to-jpg': 'bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300',
+  unlock: 'bg-lime-100 text-lime-700 dark:bg-lime-950 dark:text-lime-300',
+  protect: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
+  sign: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',
+  ocr: 'bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-300',
+  organize: 'bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300',
+  word: 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-200',
 };
 
 interface ToolCardProps {
@@ -33,45 +58,51 @@ interface ToolCardProps {
   title: string;
   desc: string;
   icon: string;
+  status?: 'live' | 'soon';
 }
 
-export default function ToolCard({ id, title, desc, icon }: ToolCardProps) {
+export default function ToolCard({ id, title, desc, icon, status = 'live' }: ToolCardProps) {
   const IconComponent = iconMap[icon] || Combine;
-  const gradient = gradientMap[icon] || 'from-primary to-indigo-500';
-
-  return (
-    <Link href={`/${id}`} className="group block">
-      <Card className="relative h-full border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-primary/30 dark:hover:border-primary/40 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden rounded-2xl">
-        {/* Hover gradient overlay */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-primary/[0.03] to-transparent pointer-events-none" />
-
-        {/* Top accent bar */}
-        <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-
-        <CardContent className="flex flex-col items-center p-6 sm:p-7 text-center relative z-10">
-          {/* Icon with gradient */}
-          <div className={`w-14 h-14 flex items-center justify-center rounded-xl bg-gradient-to-br ${gradient} text-white shadow-lg shadow-black/10 mb-4 group-hover:scale-110 group-hover:shadow-xl transition-all duration-300`}>
-            <IconComponent className="w-7 h-7" />
-          </div>
-
-          {/* Title */}
-          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 group-hover:text-primary transition-colors duration-200">
-            {title}
-          </h3>
-
-          {/* Description */}
-          <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
-            {desc}
-          </p>
-
-          {/* Arrow indicator */}
-          <div className="flex items-center gap-1 text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0">
-            Open Tool
-            <ArrowRight className="w-3.5 h-3.5" />
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+  const tone = toneMap[icon] || toneMap.merge;
+  const isLive = status === 'live';
+  const content = (
+    <div
+      className={`group relative flex h-full min-h-[188px] flex-col rounded-lg border p-5 transition ${
+        isLive
+          ? 'border-slate-200 bg-white hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-700'
+          : 'border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950'
+      }`}
+    >
+      <div className="mb-5 flex items-start justify-between gap-3">
+        <div className={`flex h-11 w-11 items-center justify-center rounded-lg ${tone}`}>
+          <IconComponent className="h-5 w-5" />
+        </div>
+        <div
+          className={`rounded-lg px-2.5 py-1 text-xs font-semibold ${
+            isLive
+              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+              : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+          }`}
+        >
+          {isLive ? 'Live' : 'Soon'}
+        </div>
+      </div>
+      <h3 className="text-base font-bold text-slate-950 dark:text-white">{title}</h3>
+      <p className="mt-2 flex-1 text-sm leading-6 text-slate-500 dark:text-slate-400">{desc}</p>
+      <div className={`mt-5 flex items-center gap-2 text-sm font-semibold ${isLive ? 'text-blue-600 dark:text-blue-300' : 'text-slate-400'}`}>
+        {isLive ? 'Open tool' : 'Planned tool'}
+        {isLive ? <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" /> : <Sparkles className="h-4 w-4" />}
+      </div>
+    </div>
   );
 
+  if (!isLive) {
+    return <div aria-disabled="true">{content}</div>;
+  }
+
+  return (
+    <Link href={`/${id}`} className="block h-full">
+      {content}
+    </Link>
+  );
 }
