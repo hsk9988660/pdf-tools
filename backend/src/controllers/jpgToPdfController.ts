@@ -1,21 +1,23 @@
-const path = require('path');
-const fs = require('fs');
-const { PDFDocument } = require('pdf-lib');
-const sharp = require('sharp');
-const conversionService = require('../services/conversionService');
+import { Request, Response, NextFunction } from 'express';
+import path from 'path';
+import fs from 'fs';
+import { PDFDocument } from 'pdf-lib';
+import sharp from 'sharp';
+import conversionService from '../services/conversionService';
 
-const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
+const UPLOAD_DIR = path.join(__dirname, '..', '..', 'uploads');
 
-exports.convert = async (req, res, next) => {
+export const convert = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const startTime = Date.now();
-  let conversion;
+  let conversion: Awaited<ReturnType<typeof conversionService.createConversion>> | undefined;
 
   try {
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: 'Please upload at least one image.' });
+    const files = req.files as Express.Multer.File[] | undefined;
+    if (!files || files.length === 0) {
+      res.status(400).json({ error: 'Please upload at least one image.' });
+      return;
     }
 
-    const files = req.files;
     const totalSize = files.reduce((sum, f) => sum + f.size, 0);
 
     // Create conversion record
@@ -41,11 +43,14 @@ exports.convert = async (req, res, next) => {
     const pdfDoc = await PDFDocument.create();
 
     for (const file of files) {
-      let imageBuffer = fs.readFileSync(file.path);
-
-      // Convert to JPEG if PNG
+      // Convert to JPEG if PNG, otherwise read as-is
+      let imageBuffer: Buffer;
       if (file.mimetype === 'image/png') {
-        imageBuffer = await sharp(imageBuffer).jpeg({ quality: 90 }).toBuffer();
+        const rawBuffer = fs.readFileSync(file.path);
+        const jpgBuffer = await sharp(rawBuffer).jpeg({ quality: 90 }).toBuffer();
+        imageBuffer = Buffer.from(jpgBuffer);
+      } else {
+        imageBuffer = fs.readFileSync(file.path);
       }
 
       const image = await pdfDoc.embedJpg(new Uint8Array(imageBuffer));
@@ -96,7 +101,7 @@ exports.convert = async (req, res, next) => {
     });
   } catch (err) {
     if (conversion) {
-      await conversionService.markFailed(conversion.id, err.message);
+      await conversionService.markFailed(conversion.id, (err as Error).message);
     }
     next(err);
   }

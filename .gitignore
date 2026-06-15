@@ -5,6 +5,7 @@ node_modules/
 backend/uploads/*
 !backend/uploads/.gitkeep
 *.log
+.local/
 .DS_Store
 dist/
 build/

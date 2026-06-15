@@ -1,0 +1,16 @@
+# Project Rules
+
+## Memory Bank Protocol
+At the start of EVERY new task, read these files in order before doing anything else:
+1. memory-bank/projectbrief.md
+2. memory-bank/activeContext.md
+3. memory-bank/progress.md
+
+If memory-bank/ doesn't exist, create it with these files based on exploring 
+the codebase, and ask me to confirm the details.
+
+## Update Protocol
+At the end of any task with meaningful progress (new feature, bug fix, 
+architectural decision, deployment change), update memory-bank/activeContext.md 
+and memory-bank/progress.md to reflect what changed. Do this automatically 
+without asking permission.

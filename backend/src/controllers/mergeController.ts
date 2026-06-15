@@ -1,31 +1,33 @@
-const path = require('path');
-const fs = require('fs');
-const { PDFDocument } = require('pdf-lib');
-const sharp = require('sharp');
-const conversionService = require('../services/conversionService');
+import { Request, Response, NextFunction } from 'express';
+import path from 'path';
+import fs from 'fs';
+import { PDFDocument } from 'pdf-lib';
+import conversionService from '../services/conversionService';
 
-const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
+const UPLOAD_DIR = path.join(__dirname, '..', '..', 'uploads');
 
-exports.convert = async (req, res, next) => {
+export const merge = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const startTime = Date.now();
-  let conversion;
+  let conversion: Awaited<ReturnType<typeof conversionService.createConversion>> | undefined;
 
   try {
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: 'Please upload at least one image.' });
+    const files = req.files as Express.Multer.File[] | undefined;
+    if (!files || files.length < 2) {
+      res.status(400).json({ error: 'Please upload at least 2 PDF files.' });
+      return;
     }
 
-    const files = req.files;
     const totalSize = files.reduce((sum, f) => sum + f.size, 0);
 
     // Create conversion record
     conversion = await conversionService.createConversion({
-      toolType: 'jpg_to_pdf',
+      toolType: 'merge',
       originalFilename: files.map((f) => f.originalname).join(', '),
       options: { fileCount: files.length },
       req,
     });
 
+    // Record input files
     for (const file of files) {
       await conversionService.addInputFile(conversion.id, {
         originalName: file.originalname,
@@ -38,46 +40,36 @@ exports.convert = async (req, res, next) => {
 
     await conversionService.markProcessing(conversion.id);
 
-    const pdfDoc = await PDFDocument.create();
+    // Merge PDFs
+    const mergedPdf = await PDFDocument.create();
 
     for (const file of files) {
-      let imageBuffer = fs.readFileSync(file.path);
-
-      // Convert to JPEG if PNG
-      if (file.mimetype === 'image/png') {
-        imageBuffer = await sharp(imageBuffer).jpeg({ quality: 90 }).toBuffer();
-      }
-
-      const image = await pdfDoc.embedJpg(new Uint8Array(imageBuffer));
-      const { width, height } = image;
-      const page = pdfDoc.addPage([width, height]);
-      page.drawImage(image, {
-        x: 0,
-        y: 0,
-        width,
-        height,
-      });
+      const fileBytes = fs.readFileSync(file.path);
+      const pdf = await PDFDocument.load(fileBytes, { ignoreEncryption: true });
+      const pageIndices = pdf.getPageIndices();
+      const copiedPages = await mergedPdf.copyPages(pdf, pageIndices);
+      copiedPages.forEach((page) => mergedPdf.addPage(page));
     }
 
-    const pdfBytes = await pdfDoc.save();
-    const outputFilename = `converted-${Date.now()}.pdf`;
+    const mergedBytes = await mergedPdf.save();
+    const outputFilename = `merged-${Date.now()}.pdf`;
     const outputPath = path.join(UPLOAD_DIR, outputFilename);
-    fs.writeFileSync(outputPath, pdfBytes);
+    fs.writeFileSync(outputPath, mergedBytes);
 
-    const pageCount = pdfDoc.getPageCount();
+    const pageCount = mergedPdf.getPageCount();
 
     // Record output file
     await conversionService.addOutputFile(conversion.id, {
       originalName: outputFilename,
       storedName: outputFilename,
       mimeType: 'application/pdf',
-      size: pdfBytes.length,
+      size: mergedBytes.length,
       filePath: outputPath,
     });
 
     await conversionService.markCompleted(conversion.id, {
       outputFilename,
-      outputSize: pdfBytes.length,
+      outputSize: mergedBytes.length,
       originalSize: totalSize,
       pageCount,
     });
@@ -89,14 +81,14 @@ exports.convert = async (req, res, next) => {
       downloadUrl: `/download/${outputFilename}`,
       filename: outputFilename,
       pageCount,
-      size: pdfBytes.length,
+      size: mergedBytes.length,
       originalSize: totalSize,
       processingTime,
       conversionId: conversion.id,
     });
   } catch (err) {
     if (conversion) {
-      await conversionService.markFailed(conversion.id, err.message);
+      await conversionService.markFailed(conversion.id, (err as Error).message);
     }
     next(err);
   }

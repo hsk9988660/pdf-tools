@@ -19,7 +19,7 @@ A modern web application for PDF manipulation built with Next.js 14 and Node.js/
 
 | Layer | Technology |
 |-------|-----------|
-| **Frontend** | Next.js 14 (App Router), React 18, Tailwind CSS, shadcn/ui |
+| **Frontend** | Next.js 14 (App Router), React 18, TypeScript, Tailwind CSS, shadcn/ui |
 | **Backend** | Node.js, Express 4 |
 | **PDF Processing** | pdf-lib, sharp |
 | **Database** | PostgreSQL 16 (via Sequelize ORM) |
@@ -30,39 +30,40 @@ A modern web application for PDF manipulation built with Next.js 14 and Node.js/
 
 ```
 pdf-tools/
-├── frontend/                          # Next.js 14 App Router
+├── frontend/                          # Next.js 14 App Router (TypeScript)
 │   ├── app/                           # Pages (App Router)
 │   │   ├── globals.css                # Global styles + design system
-│   │   ├── layout.js                  # Root layout (Navbar + Footer + Toaster)
-│   │   ├── page.js                    # Home page (hero + tool grid + features)
-│   │   ├── merge/page.js              # Merge PDF tool page
-│   │   ├── split/page.js              # Split PDF tool page
-│   │   ├── compress/page.js           # Compress PDF tool page
-│   │   ├── rotate/page.js             # Rotate PDF tool page
-│   │   ├── watermark/page.js          # Watermark PDF tool page
-│   │   ├── page-numbers/page.js       # Page Numbers tool page
-│   │   ├── jpg-to-pdf/page.js         # JPG to PDF tool page
-│   │   └── pdf-to-jpg/page.js         # PDF to JPG tool page
+│   │   ├── layout.tsx                 # Root layout (Navbar + Footer + Toaster)
+│   │   ├── page.tsx                   # Home page (hero + tool grid + features)
+│   │   ├── merge/page.tsx             # Merge PDF tool page
+│   │   ├── split/page.tsx             # Split PDF tool page
+│   │   ├── compress/page.tsx          # Compress PDF tool page
+│   │   ├── rotate/page.tsx            # Rotate PDF tool page
+│   │   ├── watermark/page.tsx         # Watermark PDF tool page
+│   │   ├── page-numbers/page.tsx      # Page Numbers tool page
+│   │   ├── jpg-to-pdf/page.tsx        # JPG to PDF tool page
+│   │   └── pdf-to-jpg/page.tsx        # PDF to JPG tool page
 │   ├── components/                    # Shared React components
-│   │   ├── Navbar.js                  # Sticky nav with dark mode toggle
-│   │   ├── Footer.js                  # Site footer with links
-│   │   ├── ToolCard.js                # Tool grid card with gradient icons
-│   │   ├── FileDropzone.js            # Drag & drop file uploader
-│   │   ├── ProgressBar.js             # Upload/processing progress bar
-│   │   ├── DownloadButton.js          # Download button with states
+│   │   ├── Navbar.tsx                 # Sticky nav with dark mode toggle
+│   │   ├── Footer.tsx                 # Site footer with links
+│   │   ├── ToolCard.tsx               # Tool grid card with gradient icons
+│   │   ├── FileDropzone.tsx           # Drag & drop file uploader
+│   │   ├── ProgressBar.tsx            # Upload/processing progress bar
+│   │   ├── DownloadButton.tsx         # Download button with states
 │   │   └── ui/                        # shadcn/ui primitives
-│   │       ├── button.js              # Button component (CVA)
-│   │       ├── card.js                # Card component
-│   │       ├── dialog.jsx             # Modal dialog
-│   │       ├── input.jsx              # Text input
-│   │       ├── progress.jsx           # Radix progress bar
-│   │       ├── select.jsx             # Radix select dropdown
-│   │       └── sonner.jsx             # Toast notifications
+│   │       ├── button.tsx             # Button component (CVA)
+│   │       ├── card.tsx               # Card component
+│   │       ├── dialog.tsx             # Modal dialog
+│   │       ├── input.tsx              # Text input
+│   │       ├── progress.tsx           # Radix progress bar
+│   │       ├── select.tsx             # Radix select dropdown
+│   │       └── sonner.tsx             # Toast notifications
 │   ├── lib/                           # Utility functions
-│   │   ├── api.js                     # XHR upload with progress + download helper
-│   │   └── utils.js                   # cn() helper (clsx + tailwind-merge)
+│   │   ├── api.ts                     # XHR upload with progress + download helper
+│   │   └── utils.ts                   # cn() helper (clsx + tailwind-merge)
+│   ├── globals.d.ts                   # TypeScript declarations
 │   ├── tailwind.config.js             # Tailwind config with custom animations
-│   ├── tsconfig.json                  # TypeScript config (JS allowed)
+│   ├── tsconfig.json                  # TypeScript config
 │   └── package.json                   # Dependencies
 │
 ├── backend/                           # Express API server
@@ -115,7 +116,7 @@ pdf-tools/
 
 ### Page Structure (App Router)
 Every tool page follows this pattern:
-```jsx
+```tsx
 'use client';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -127,10 +128,10 @@ import { uploadFile } from '../../lib/api';
 import { IconName } from 'lucide-react';
 
 export default function ToolPage() {
-  const [files, setFiles] = useState([]);
-  const [progress, setProgress] = useState(null);
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [progress, setProgress] = useState<number | null>(null);
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
@@ -159,8 +160,8 @@ export default function ToolPage() {
 - `error` - Error message string or null
 - `loading` - Boolean for loading state
 
-### API Helper (`lib/api.js`)
-```js
+### API Helper (`lib/api.ts`)
+```ts
 uploadFile(url, formData, onProgress)  // XHR upload with progress tracking
 downloadFile(url)                       // Trigger file download
 ```

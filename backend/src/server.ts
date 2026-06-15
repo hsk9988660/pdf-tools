@@ -1,36 +1,36 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const cron = require('node-cron');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import cron from 'node-cron';
+import dotenv from 'dotenv';
 
-const db = require('./models');
-const errorHandler = require('./middleware/errorHandler');
-const requestLogger = require('./middleware/requestLogger');
-const { cleanupOldFiles } = require('./utils/cleanup');
+dotenv.config();
+
+import db from './models';
+import errorHandler from './middleware/errorHandler';
+import requestLogger from './middleware/requestLogger';
+import { cleanupOldFiles } from './utils/cleanup';
 
 // Route imports
-const mergeRoutes = require('./routes/merge');
-const splitRoutes = require('./routes/split');
-const compressRoutes = require('./routes/compress');
-const rotateRoutes = require('./routes/rotate');
-const watermarkRoutes = require('./routes/watermark');
-const pageNumbersRoutes = require('./routes/pageNumbers');
-const jpgToPdfRoutes = require('./routes/jpgToPdf');
-const pdfToJpgRoutes = require('./routes/pdfToJpg');
-const statsRoutes = require('./routes/stats');
+import mergeRoutes from './routes/merge';
+import splitRoutes from './routes/split';
+import compressRoutes from './routes/compress';
+import rotateRoutes from './routes/rotate';
+import watermarkRoutes from './routes/watermark';
+import pageNumbersRoutes from './routes/pageNumbers';
+import jpgToPdfRoutes from './routes/jpgToPdf';
+import pdfToJpgRoutes from './routes/pdfToJpg';
+import statsRoutes from './routes/stats';
 
 // Start BullMQ worker only when explicitly enabled.
 // Routes process files directly, so Redis is optional for local development.
-let worker;
 if (process.env.ENABLE_PDF_WORKER === 'true') {
-  try {
-    worker = require('./workers/pdfWorker');
+  import('./workers/pdfWorker').then(() => {
     console.log('BullMQ worker started successfully');
-  } catch (err) {
+  }).catch((err: Error) => {
     console.warn('BullMQ worker not started (Redis may be unavailable):', err.message);
     console.warn('All routes will still work without the background worker.');
-  }
+  });
 } else {
   console.log('BullMQ worker disabled. Set ENABLE_PDF_WORKER=true to enable Redis-backed jobs.');
 }
@@ -56,10 +56,10 @@ app.use('/api/pdf-to-jpg', pdfToJpgRoutes);
 app.use('/api/stats', statsRoutes);
 
 // Static file serving for downloads
-app.use('/download', express.static(path.join(__dirname, 'uploads')));
+app.use('/download', express.static(path.join(__dirname, '..', 'uploads')));
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -87,7 +87,7 @@ async function startServer() {
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (err) {
-    console.error('Failed to start server:', err.message);
+    console.error('Failed to start server:', (err as Error).message);
     // Start server even if DB is unavailable (for development)
     app.listen(PORT, () => {
       console.log(`PDF Tools backend running on http://localhost:${PORT} (without database)`);
