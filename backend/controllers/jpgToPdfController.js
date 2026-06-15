@@ -48,7 +48,7 @@ exports.convert = async (req, res, next) => {
         imageBuffer = await sharp(imageBuffer).jpeg({ quality: 90 }).toBuffer();
       }
 
-      const image = await pdfDoc.embedJpg(imageBuffer);
+      const image = await pdfDoc.embedJpg(new Uint8Array(imageBuffer));
       const { width, height } = image;
       const page = pdfDoc.addPage([width, height]);
       page.drawImage(image, {

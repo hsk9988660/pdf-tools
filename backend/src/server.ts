@@ -22,19 +22,17 @@ import jpgToPdfRoutes from './routes/jpgToPdf';
 import pdfToJpgRoutes from './routes/pdfToJpg';
 import statsRoutes from './routes/stats';
 
-// Start BullMQ worker for background job processing (compress, pdf-to-jpg)
-// Gracefully handle missing Redis - worker will log a warning if Redis is unavailable
-try {
-  // Dynamic import to avoid crash if Redis is unavailable
-  import('./workers/pdfWorker').then(({ default: worker }) => {
+// Start BullMQ worker only when explicitly enabled.
+// Routes process files directly, so Redis is optional for local development.
+if (process.env.ENABLE_PDF_WORKER === 'true') {
+  import('./workers/pdfWorker').then(() => {
     console.log('BullMQ worker started successfully');
   }).catch((err: Error) => {
     console.warn('BullMQ worker not started (Redis may be unavailable):', err.message);
     console.warn('All routes will still work without the background worker.');
   });
-} catch (err) {
-  console.warn('BullMQ worker not started (Redis may be unavailable):', (err as Error).message);
-  console.warn('All routes will still work without the background worker.');
+} else {
+  console.log('BullMQ worker disabled. Set ENABLE_PDF_WORKER=true to enable Redis-backed jobs.');
 }
 
 const app = express();
